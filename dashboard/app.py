@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html
+from dash import dcc, html, Output, Input
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
@@ -17,8 +17,9 @@ sidebar = html.Div(
         html.Img(src='assets/logo.png', className='logo-img'),
         html.Nav([
             html.Ul([
-                html.Li(html.A(children=[DashIconify(icon="mdi:home", className='icon'),'Home'], href='', style={'display':'block'})),
+                html.Li(html.A(children=[DashIconify(icon="mdi:home", className='icon'),'Home'], href='')),
                 html.Li(html.A(children=[DashIconify(icon="mdi:tag-plus", className='icon'),'New Item'], href='')),
+                html.Li(html.A(children=[DashIconify(icon="mdi:sale", className='icon'),'Auctions'], href='')),
                 html.Li(html.A(children=[DashIconify(icon="mdi:account", className='icon'),'Account'], href='')),
                 html.Li(html.A(children=[DashIconify(icon="mdi:cog", className='icon'),'Settings'], href='')),
             ], className='nav'),
@@ -114,11 +115,50 @@ figure_grouped.update_layout(
 figure_grouped.update_xaxes(showgrid=True, gridcolor='rgb(240, 239, 236)')
 figure_grouped.update_yaxes(showgrid=True, gridcolor='rgb(245, 249, 246)')
 
+# Define the style for the cards
+card_style = {
+    'border': '1px solid #ddd',
+    'borderRadius': '10px',
+    'padding': '20px',
+    'margin': '10px',
+    'width': '290px',
+    'height': '24vh', 
+    'textAlign': 'center',
+    'boxShadow': '2px 2px 10px rgba(0,0,0,0.1)',
+}
+
 app.layout = html.Div([
     html.Div(
         sidebar
     ),
     html.H1(className='header', children=['MURPHY MERCHANTS AUCTIONEERS']),
+    html.Div([
+        html.Div([
+            html.Div([
+                DashIconify(icon='bi:bag-fill', width=30, height=30, style={'color': '#7d4cdb'}),
+                html.H4('ITEMS IN AUCTION'),
+                html.Div(id='dummy-input', style={'display':'none'}),
+                html.H1(id='total-items'),
+            ], style=card_style),
+        ], className='four columns'),
+        
+        html.Div([
+            html.Div([
+                DashIconify(icon='bi:cash-stack', width=30, height=30, style={'color': '#ffb703'}),
+                html.H4('SUM OF BIDS'),
+                html.H1(id='total-price'),
+            ], style=card_style),
+        ], className='four columns'),
+        
+        html.Div([
+            html.Div([
+                DashIconify(icon='bi:tags-fill', width=30, height=30, style={'color': '#52b788'}),
+                html.H4('ITEM CATEGORIES'),
+                html.H1(id='total-cat'),
+            ], style=card_style),
+        ], className='four columns'),
+    ], className='row row-first'),
+    
     dbc.Row(
         [
             dbc.Col(
@@ -142,7 +182,7 @@ app.layout = html.Div([
                     )
                 ]
             )
-        ], className='row row-first'
+        ], className='row'
     ),
     html.Hr(className='row'),
     dbc.Row(
@@ -165,5 +205,29 @@ app.layout = html.Div([
     )
 ], className='content')
 
+@app.callback(
+    Output('total-items', 'children'),
+    Input('dummy-input', 'children')
+)
+def update_total_items(n):
+    total_unique_items = df['Item ID'].nunique()
+    return f'{total_unique_items}'
+
+@app.callback(
+    Output('total-price', 'children'),
+    Input('dummy-input', 'children')
+)
+def update_item_price(n):
+    total_price = df['Starting Bid'].sum()
+    return f'{total_price}'
+
+@app.callback(
+    Output('total-cat', 'children'),
+    Input('dummy-input', 'children')
+)
+def update_categories(n):
+    total_cat = df['Type'].nunique()
+    return f'{total_cat}'
+
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
