@@ -1,8 +1,63 @@
 from flask import Blueprint, request, jsonify
 from models.models import User, AuctionItem, Bid
 from db.database import db
+from flask_login import login_user, logout_user, current_user
+
 
 main_bp = Blueprint('main', __name__)
+
+
+@main_bp.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({'message': 'Email already in use'}), 400
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({'message': 'Email already exists'}), 400
+
+    new_user = User(name=name, email=email)
+    new_user.set_password(password)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({'message': 'User registered successfully'}), 201
+
+
+@main_bp.route("/login", methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    user = User.query.filter_by(email=email).first()
+
+    if user and user.check_password(password):
+        login_user(user)
+        return jsonify({'message': 'Logged in successfully'}), 200
+    return jsonify({'message': 'Invalid credentials'}), 401
+
+
+@main_bp.route('/logout', methods=['POST'])
+def logout():
+    logout_user()
+    return jsonify({'message': 'Logged out successfully'}), 200
+
+
+@main_bp.route('/current_user', methods=['GET'])
+def get_current_user():
+    if current_user.is_authenticated:
+        return jsonify({
+            'username': current_user.username,
+            'email': current_user.email
+        }), 200
+    return jsonify({'message': 'No user is logged in'}), 401
+
 
 @main_bp.route('/users', methods=['POST'])
 def create_user():
@@ -11,6 +66,7 @@ def create_user():
     db.session.add(new_user)
     db.session.commit()
     return jsonify({'message': 'User created successfully'}), 201
+
 
 @main_bp.route('/auction-items', methods=['POST'])
 def create_auction_item():
@@ -24,6 +80,7 @@ def create_auction_item():
     db.session.add(new_item)
     db.session.commit()
     return jsonify({'message': 'Auction item created successfully'}), 201
+
 
 @main_bp.route('/bids', methods=['POST'])
 def create_bid():
@@ -41,6 +98,7 @@ def create_bid():
     db.session.commit()
     return jsonify({'message': 'Bid placed successfully'}), 201
 
+
 @main_bp.route('/auction-items/<int:item_id>', methods=['GET'])
 def get_auction_item(item_id):
     auction_item = AuctionItem.query.get_or_404(item_id)
@@ -52,8 +110,24 @@ def get_auction_item(item_id):
         'current_price': auction_item.current_price
     })
 
+
 @main_bp.route('/users/<int:user_id>/bids', methods=['GET'])
 def get_user_bids(user_id):
     user = User.query.get_or_404(user_id)
-    bids = [{'id': bid.id, 'amount': bid.amount, 'auction_item_id': bid.auction_item_id} for bid in user.bids]
+    bids = [{'id': bid.id, 'amount': bid.amount,
+             'auction_item_id': bid.auction_item_id} for bid in user.bids]
     return jsonify(bids)
+
+@main_bp.errorhandler(401)
+def unauthorized_page(error):
+    return "Permission Denied", 401
+
+
+@main_bp.errorhandler(404)
+def page_not_found(error):
+    return "Not Found!", 404
+
+
+@main_bp.errorhandler(500)
+def server_error_page(error):
+    return "Server Error", 500

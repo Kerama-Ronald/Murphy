@@ -1,6 +1,8 @@
+from flask_login import LoginManager
 from sqlalchemy import MetaData
-from config import config
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -14,3 +16,8 @@ metadata = MetaData(naming_convention=convention)
 
 
 db = SQLAlchemy(metadata=metadata)
+
+bcrypt = Bcrypt()
+login_manager = LoginManager()
+
+
