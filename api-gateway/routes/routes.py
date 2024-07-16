@@ -64,7 +64,11 @@ def login():
 
     if user and user.check_password(password):
         token = generate_token(user)
-        return jsonify({'token': token}), 200
+        return jsonify({
+            'name': user.name,
+            'email': user.email,
+            'role': user.role,
+            'token': token}), 200
     return jsonify({'message': 'Invalid credentials'}), 401
 
 

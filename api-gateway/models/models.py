@@ -10,12 +10,12 @@ class Role(enum.Enum):
     BASIC = 'BASIC'
     ADMIN = 'ADMIN'
 
-
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     name = Column(String(80), unique=False, nullable=False)
     email = Column(String(120), unique=True, nullable=False)
+    image = Column(String(240), unique=False, nullable=True)
     password = Column(String, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.now())
     role = Column(Enum(Role), nullable=False, default=Role.BASIC)
@@ -29,8 +29,6 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
-
-
 
 class AuctionImage(db.Model):
     __tablename__ = 'auction_images'
