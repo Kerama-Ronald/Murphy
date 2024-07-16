@@ -3,7 +3,11 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Signin from "@/components/Auth/Signin";
 import Link from "next/link";
 
-export default function Page() {
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { error: string | undefined };
+}) {
   return (
     <>
       {/* <Breadcrumb pageName="Sign In" /> */}
@@ -12,7 +16,7 @@ export default function Page() {
         <div className="flex flex-wrap items-center">
           <div className="w-full xl:w-1/2">
             <div className="w-full p-4 sm:p-12.5 xl:p-15">
-              <Signin />
+              <Signin error={searchParams.error} />
             </div>
           </div>
 

@@ -5,7 +5,6 @@ import "@/css/satoshi.css";
 import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
-import { Toast } from "@radix-ui/react-toast";
 
 export default function RootLayout({
   children,
@@ -24,14 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        {loading ? (
-          <Loader />
-        ) : (
-          <>
-            <Toast />
-            {children}
-          </>
-        )}
+        {loading ? <Loader /> : children}
       </body>
     </html>
   );

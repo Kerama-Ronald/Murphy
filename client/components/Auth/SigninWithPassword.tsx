@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+//import { useToast } from "../ui/use-toast";
 
 export type FormData = {
   email: string;
@@ -13,10 +16,40 @@ export default function SigninWithPassword() {
     remember: false,
   });
   const { register, handleSubmit, reset } = useForm<FormData>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+  //const { toast } = useToast();
+
+  const handleCredentialLogin = async (data: FormData) => {
+    console.log(data);
+
+    const res = await signIn("credentials", {
+      ...data,
+      redirect: false,
+    });
+
+    if (res) {
+      if (res.ok) {
+        console.log(res);
+        router.push(res.url || '/');
+      } else {
+        router.push(`/auth/login?error=${res.error}`);
+      }
+    }
+  };
+
+  async function onSubmit(data: FormData) {
+    if (isLoading) return;
+
+    setIsLoading(true)
+
+    await handleCredentialLogin(data).finally(() => {
+      setIsLoading(false)
+    })
+  }
 
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-4">
         <label
           htmlFor="email"

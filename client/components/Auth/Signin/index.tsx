@@ -4,7 +4,7 @@ import React from "react";
 import GoogleSigninButton from "../GoogleSigninButton";
 import SigninWithPassword from "../SigninWithPassword";
 
-export default function Signin() {
+export default function Signin({ error }: { error: string | undefined }) {
   return (
     <>
       {/* <GoogleSigninButton text="Sign in" /> */}
@@ -16,7 +16,11 @@ export default function Signin() {
         </div>
         <span className="block h-px w-full bg-stroke dark:bg-dark-3"></span>
       </div>
-
+      {error && (
+        <div className="text-sm text-red-600" role="alert">
+          Invalid details
+        </div>
+      )}
       <div>
         <SigninWithPassword />
       </div>

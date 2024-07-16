@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "This is Next.js Login Page NextAdmin Dashboard Kit",
 };
 
-const SignIn: React.FC = () => {
+const SignIn: React.FC<{error: string | undefined}> = ({error}: {error: string | undefined}) => {
   return (
     <DefaultLayout>
       <Breadcrumb pageName="Sign In" />
@@ -20,7 +20,7 @@ const SignIn: React.FC = () => {
         <div className="flex flex-wrap items-center">
           <div className="w-full xl:w-1/2">
             <div className="w-full p-4 sm:p-12.5 xl:p-15">
-              <Signin />
+              <Signin error={error} />
             </div>
           </div>
 

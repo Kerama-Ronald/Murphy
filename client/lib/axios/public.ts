@@ -5,11 +5,4 @@ const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
 })
 
-api.interceptors.request.use(async (config: any) => {
-    const session = await getSession();
-
-    config.headers.Authorization = `Bearer ${process.env.PUBLIC_ACCESSTOKEN}`
-    return config
-})
-
-export default api; 
+export default api;

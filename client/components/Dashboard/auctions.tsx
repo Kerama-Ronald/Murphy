@@ -8,7 +8,7 @@ import MapOne from "../Maps/MapOne";
 import DataStatsOne from "@/components/DataStats/DataStatsOne";
 import ChartOne from "@/components/Charts/ChartOne";
 
-const ECommerce: React.FC = () => {
+const Auctions: React.FC = () => {
   return (
     <>
       <DataStatsOne />
@@ -17,7 +17,7 @@ const ECommerce: React.FC = () => {
         <ChartOne />
         <ChartTwo />
         <ChartThree />
-        <MapOne />
+        {/* <MapOne /> */}
         <div className="col-span-12 xl:col-span-8">
           <TableOne />
         </div>
@@ -27,4 +27,4 @@ const ECommerce: React.FC = () => {
   );
 };
 
-export default ECommerce;
+export default Auctions;
